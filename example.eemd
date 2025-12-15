@@ -1,0 +1,1207 @@
+<!--
+ Slide pour se présenter
+
+Story telling -> C'est quoi l'intégration et comment tu es arrivé à ça
+Boss pour client le client doit intégré beaucoup de donnée mais c'est quoi l'inté
+
+Présenter l'exemple
+
+5 minutes de quesiton ou 0 min de question c'est ok
+
+# Spring Boot 4.0.0 GA
+
+## Ce qui change vraiment pour toi
+
+_par Florian Lemaire & William Leemans_
+
+
+Bonjour à toutes et tous, nous allons maintenant vous parler de Spring Boot 4.0.0 GA et surtout de comment cette version va vous impacter dans votre travail de tous les jours.
+On va se concentrer sur l'essentiel mais vous fournir en fin de talk des resources pour pouvoir explorer toutes les nouveautés
+
+---
+
+## layout: center
+
+# Noël avant l'heure ! 🎄
+
+
+StoryTelling
+
+Florian et moi ça fait plus de 10 ans qu'on fait du Spring, on l'a connu quand "Spring Boot" n'existait pas encore , on en a écrit du XML (mais j'imagine que ça ne parle pas aux plus jeunes d'entre vous).
+
+Aujourd'hui c'est un peu Noël avant l'heure pour nous avec cette nouvelle version majeure de notre framework préféré.
+
+Alors commençons sans plus tarder avec une petite note sur la base: Java !
+
+
+---
+
+## layout: center
+
+# Baseline Java
+
+---
+
+## layout: split
+
+::left::
+
+<span class="chapter">Baseline Java</span>
+
+## Quelle version utiliser ?
+
+<div class="flex flex-col gap-6 mt-8">
+    <div v-click class="pane glass-panel">
+      <div class="flex items-center gap-3">
+        <div>
+          <div class="text-xl font-bold">Java 17</div>
+          <div class="text-sm opacity-70">Version minimale</div>
+        </div>
+      </div>
+    </div>
+    <div v-click class="pane-green glass-panel">
+      <div class="flex items-center gap-3">
+        <div>
+          <div class="text-xl font-bold">Java 25</div>
+          <div class="text-sm opacity-70">Version recommandée</div>
+        </div>
+      </div>
+  </div>
+</div>
+
+::right::
+
+<div v-click="3" class="mt-16 ml-8">
+
+### Pourquoi Java 25 ?
+
+<div class="flex flex-col gap-3 mt-6">
+  <div v-click="4" class="flex items-start gap-2">
+    <div>
+      <div class="font-semibold">Virtual Threads optimisés</div>
+      <div class="text-sm opacity-70">Performance maximale</div>
+    </div>
+  </div>
+
+  <div v-click="5" class="flex items-start gap-2">
+    <div>
+      <div class="font-semibold">Support jusqu'en 2030</div>
+      <div class="text-sm opacity-70">5 ans de tranquillité</div>
+    </div>
+  </div>
+
+  <div v-click="6" class="flex items-start gap-2">
+    <div>
+      <div class="font-semibold">Dernières améliorations</div>
+      <div class="text-sm opacity-70">JEP 491, 506, 519...</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+
+Tout comme la version 3.5.X, la version minimale requise de Java est la 17.
+
+Mais la team Spring Boot recommande de passer directement à la 25 pour profiter d'un maximum d'améliorations.
+
+    Java 8 : mars 2022
+    Java 11 : septembre 2023
+    Java 17 : septembre 2026
+    Java 21 : septembre 2028
+    Java 25 : septembre 2030
+
+Avec Java 25, vous profitez des Virtual Threads optimisés, d'un support jusqu'en 2030, et de toutes les dernières améliorations de la plateforme.
+
+Si vous avez encore besoin de convaincre votre boss pour ne pas rester en Java 11 (ou pire, en Java 8 ?!), on va voir juste après ce que ça apporte concrètement.
+
+
+---
+
+## transition: view-transition
+
+<span class="chapter">Baseline Java</span>
+
+## Virtual Threads ( JEP 444 )
+
+Gros gains de performance !
+
+```yml
+spring:
+  threads:
+    virtual:
+      enabled: true
+```
+
+<p v-click>Résolution des problèmes Java 21 + Spring Boot 3.5.X :</p>
+
+<div class="flex flex-col gap-4 mt-6 w-2/5">
+    <span v-click class="glass-panel pane text-md py-2 px-4">Thread pinning ( JEP 491 )</span>
+    <span v-click class="glass-panel pane text-md py-2 px-4">Shutdown brutal</span>
+    <span v-click class="glass-panel pane text-md py-2 px-4">Scoped Values ( JEP 506 )</span>
+</div>
+
+<img style="position: absolute; right: 40px; bottom: 40px"
+v-click width="250" src="/images/pousse.gif"/>
+
+
+Les Virtual Threads (JEP 444)
+
+- Je vous ai mis les numéros des JEP sur la slide, avec ça vous pouvez facilement trouver plus d'infos sur internet, la documentation fournie par openjdk est très bien mais en anglais évidemment
+
+Premier gros argument pour passer sur la JDK 25, ce sont les virtual threads, on ne les présentes plus !
+
+Faisant partie du projet Loom, ça va booster votre application sans nécessiter une réécriture de votre app en réactif avec Spring Webflux.
+
+C'est très facile d'activer cette feature dans Spring, il suffit de passer la property suivante a "true".
+
+Ils ont pu grandement stabiliser leur utilisation dans Java 25 car même si dispo depuis Java 21, il y avait encore pas mal de soucis, notamment de thread pinning (fixé en JEP 491) , des soucis au niveau du shutdown et l'arrivée des Scoped Values (JEP 506 )
+
+
+---
+
+<span class="chapter">Baseline Java</span>
+
+## Compact Object Headers ( JEP 519 )
+
+<div class="glass-panel pane my-6"> Réduction de 20% de l'empreinte mémoire </div>
+
+<p v-click>Idéal pour microservices: </p>
+
+<div class="grid grid-cols-5 grid-rows-2 gap-2">
+    <span v-after class="glass-panel pane text-md py-2 px-4 col-span-2">Moins de GC</span>
+    <span v-click class="text-4xl text-center m-auto py-2 px-4 text-orange/80">→</span>
+    <span v-after class="glass-panel pane-green text-md py-2 px-4 col-span-2">Plus de performances</span>
+    <span v-click class="glass-panel pane text-md py-2 px-4 col-span-2">Besoin de moins de mémoire</span>
+    <span v-click class="text-4xl text-center m-auto py-2 px-4 text-orange/80">→</span>
+    <span v-after class="glass-panel pane-green text-md py-2 px-4 col-span-2">Plus d'économies</span>
+</div>
+
+<img style="position: absolute; right: 350px; bottom: 10px"
+v-click width="250" src="/images/stonk.png"/>
+
+
+La JEP 519 c'est la premier feature intégrée du Projet Lilliput, qui est l'initiative d'OpenJDK pour réduire la taille des en-têtes d'objets Java de 128 bits (16 bytes) à 64 bits (8 bytes) pour économiser jusqu'à 20% de mémoire.
+
+En Java 25 c'est activé par défaut, rien à configurer.
+
+Ca a de gros avantages surtout quand on fait des microservices.
+
+Moins de mémoire utilisée ça veut dire moins de GC et donc l'application java passe plus de temps process les requêtes ce qui augmente les perfs.
+
+Et enfin qui dit moins de mémoire nécessaire, dit économies !
+
+
+---
+
+## layout: center
+
+# Spring Boot 4.0.0 GA
+
+---
+
+layout: cover
+transition: slide-up
+
+---
+
+<QuiVeutDesCadeaux title="1er cadeau !"/>
+
+---
+
+## layout: center
+
+# La modularité
+
+
+Spring boot 1.0
+
+Spring-boot-autoconfigure jar weighing in at 182 KiB
+
+Spring Boot 3.5 -> 2MiB (11x)
+
+Disk space cheap mais la plupart des classes pas interessantes, auto-complete suggestion et config properties par pertinent -> Charge Mentale et confusion.
+
+
+---
+
+<span class="chapter">Modularité</span>
+
+## Problème : Config monolitique
+
+<div class="grid grid-cols-3 gap-3 pt-4">
+  <div class="pane glass-panel font-bold relative col-span-2">
+    spring-boot-autoconfigure
+    <span v-click.hide class="text-xs absolute right-2 bottom-2">182 kiB</span>
+    <span v-click class="text-md absolute right-2 bottom-2 animate-pulse">2 MiB</span>
+  </div>
+</div>
+
+<div v-click class="my-4">Conséquences :</div>
+
+<div class="grid grid-cols-2 grid-rows-2 gap-2">
+    <span v-after class="glass-panel pane-red text-md py-2 px-4">Classes inutiles dans le classpath</span>
+    <span v-click class="glass-panel pane-red text-md py-2 px-4">Auto-complétion IDE surchargée</span>
+    <span v-click class="glass-panel pane-red text-md py-2 px-4">Confusion et charge mentale accrue</span>
+    <span v-click class="glass-panel pane-red text-md py-2 px-4">Coûts de scan au démarrage élevés</span>
+</div>
+
+
+Évolution du JAR spring-boot-autoconfigure
+
+Spring Boot 1.0 (2014) : 182 KiB
+Spring Boot 3.5 : 2 MiB (×10 en taille !)
+
+Conséquences
+
+❌ Classes inutiles dans le classpath
+❌ Auto-complétion IDE surchargée
+❌ Suggestions de propriétés non pertinentes
+❌ Confusion et charge mentale accrue
+❌ Coûts de scan au démarrage élevés
+
+
+---
+
+<span class="chapter">Modularité</span>
+
+## Solution : Modules ciblés
+
+<span>Au lieu d'un JAR monolithique → modules petits et focalisés</span>
+
+<div class="grid grid-cols-3 gap-3">
+  <div v-click class="pane glass-panel">
+    spring-boot-data-jdbc
+  </div>
+
+  <div v-click class="pane glass-panel">
+    spring-boot-starter-webmvc
+  </div>
+
+  <div v-click class="pane glass-panel">
+    spring-boot-starter-flyway
+  </div>
+</div>
+
+<div v-click class="my-4">Avantages :</div>
+
+<div class="grid grid-cols-2 grid-rows-2 gap-3 pt-2">
+    <span v-after class="glass-panel pane-green py-2 px-4">Maintenabilité</span>
+    <span v-click class="glass-panel pane-green py-2 px-4">Taille réduite</span>
+    <span v-click class="glass-panel pane-green py-2 px-4">Signal fort </span>
+    <span v-click class="glass-panel pane-green py-2 px-4">Nouveaux cas d'usage</span>
+</div>
+
+
+Spring boot 1.0
+
+Spring-boot-autoconfigure jar weighing in at 182 KiB
+
+Spring Boot 3.5 -> 2MiB (11x)
+
+Disk space cheap mais la plupart des classes pas interessantes, auto-complete suggestion et config properties par pertinent -> Charge Mentale et confusion.
+
+
+---
+
+<span class="chapter">Modularité</span>
+
+## Solution : Modules ciblés
+
+<div class="py-2"></div>
+
+````md magic-move
+```xml {all|1-4|5-8|9-12|all}
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+<dependency>
+  <groupId>org.flywaydb</groupId>
+  <artifactId>flyway-core</artifactId>
+</dependency>
+```
+
+```xml {all|9-12|1-4||all}
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-webmvc</artifactId>
+</dependency>
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-flyway</artifactId>
+</dependency>
+```
+````
+
+<div v-click class="pane glass-panel mt-6">
+    Une liste exhaustive des starters est disponible dans le guide de migration.
+</div>
+
+---
+
+<span class="chapter">Modularité</span>
+
+## Un impact aussi sur les Test !
+
+<div class="grid grid-cols-3 gap-3 py-2">
+  <div class="pane glass-panel font-bold relative col-span-2">
+    spring-boot-test-autoconfigure
+  </div>
+</div>
+
+```xml {all|3,8,13|all}
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-webmvc-test</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+<groupId>or g.springframework.boot</groupId>
+<artifactId>spring-boot-starter-security-test</artifactId>
+<scope>test</scope>
+</dependency>
+<dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-flyway-test</artifactId>
+<scope>test</scope>
+</dependency>
+```
+
+---
+
+<span class="chapter">Modularité</span>
+
+## Les "classic starters"
+
+Si vous n'avez pas le temps :
+
+```xml
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-classic</artifactId>
+</dependency>
+<dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-test-classic</artifactId>
+<scope>test</scope>
+</dependency>
+```
+
+---
+
+layout: cover
+transition: slide-up
+
+---
+
+<QuiVeutDesCadeaux title="2ème Cadeau !"/>
+
+---
+
+## layout: center
+
+# Les Http Service Clients
+
+## Un client Spring Native !
+
+---
+
+<span class="chapter">Http Service Client</span>
+
+## Le problème historique
+
+🐌 RestTemplate → déprécié
+💡 WebClient → réactif mais pas naturel pour du REST bloquant
+⚙️ Clients variés (Feign, OkHttp, etc.)
+
+## Http Service Clients
+
+Spring réintroduit un support **déclaratif d’interfaces HTTP**
+=> Grâce à des interfaces Java et à un proxy généré automatiquement.
+
+
+Les clients HTTP ont souvent évolué coté Spring.
+On voit encore des Rest Template dépréciés dans nos projets, faute de nos projets.
+Ensuite on devait passer sur WebClient qui venait du Réactif et qui posait souvent des soucis.
+
+Du coup beaucoup entre nous utilisaient des libs externes comme Feign, OkHttp, Retrofit etc...
+
+
+---
+
+<span class="chapter">Http Service Client</span>
+
+## Définir un client HTTP déclaratif
+
+```java
+@HttpExchange("/pokemon")
+public interface PokemonClient {
+
+  @GetExchange("/{name}")
+  PokemonApiResponse getPokemon(@PathVariable String name);
+
+}
+```
+
+✅ Pas d’implémentation à écrire
+✅ Les conversions JSON sont automatiques
+✅ Intégration Spring Boot complète ()
+
+---
+
+<span class="chapter">Http Service Client</span>
+
+## Avec une config super simple
+
+```yml
+spring:
+  http:
+    serviceclient:
+      pokemon:
+        base-url: https://pokeapi.co/api/v2
+        connect-timeout: 3s
+        read-timeout: 5s
+```
+
+✔ Auto-configuré
+✔ Timeout géré
+✔ Base URL injectable
+✔ Tracing & métriques automatiques
+
+---
+
+<span class="chapter">Http Service Client</span>
+
+## Réunir les clients en groupe
+
+Quand on a plusieurs clients HTTP différents, Spring organise ça avec des groupes.
+
+```java
+// En spécifiant directement les classes
+@ImportHttpServices(group = "pokemon", types = {PokemonClient.class, SpeciesClient.class})
+
+// Ou le package de base
+@ImportHttpServices(group = "pokemon", basePackages = "com.jetdev.demospringboot4.clients.pokemon")
+```
+
+Tous les clients d’un même groupe partagent la même config : base URL, timeouts, convertisseurs, etc.
+
+Spring introduit un registry interne (HttpServiceProxyRegistry) qui gère les clients et leurs configurations.
+
+✔ Centralise la configuration
+✔ Réduit la duplication
+✔ Prêt pour l’AOT / Native builds
+
+
+En utilisant les groupes, ça nous permet d'avoir une configuration pour plusieurs clients.
+On n'a plus besoin d'une classe de config par client, on simplifie encore le code grâce à Spring.
+
+Pour finir ces clients et groupes sont Spring Native, et donc liés directement au starter opentelemetry par exemple,
+ou déjà configurés pour les builds en natif.
+
+
+---
+
+layout: cover
+transition: slide-up
+
+---
+
+<QuiVeutDesCadeaux title="3ème Cadeau !"/>
+
+
+On attaque maintenant un sujet qui nous a tous fait souffrir au moins une fois :
+le versioning d’API.
+
+AJOUTER v1, v2, v3 dans les URLs, maintenir plusieurs contrôleurs, casser des clients…
+Bref : la joie.
+
+
+---
+
+## layout: center
+
+# Le versioning d'API
+
+## Enfin en standard dans Spring Boot 4
+
+
+Jusqu’à Spring Boot 3, le versioning était soit :
+- bricolé avec des Headers custom
+- fait dans l’URL (/v1, /v2)
+- ou géré côté gateway
+
+Spring Boot 4 introduit un vrai support officiel du versioning au niveau du mapping MVC.
+
+
+---
+
+<span class="chapter">Versioning d'API</span>
+
+## Avant Spring Boot 4
+
+```java
+@GetMapping("/api/v1/pokemon/{name}")
+public PokemonDto v1(...) {}
+
+@GetMapping("/api/v2/pokemon/{name}")
+public PokemonV2Dto v2(...) {}
+```
+
+❌ Duplication de routes
+❌ Explosion du nombre de contrôleurs
+❌ Tests plus complexes
+❌ Difficile à faire évoluer proprement
+
+---
+
+<span class="chapter">Versioning d'API</span>
+
+## Avec Spring Boot 4
+
+```java
+@GetMapping(value = "/{name}", version = "1.0")
+public PokemonDto getPokemonV1(...) {}
+
+@GetMapping(value = "/{name}", version = "1.2")
+public PokemonWithSpeciesDto getPokemonV1_2(...) {}
+```
+
+✅ Même URL
+✅ Plusieurs implémentations
+✅ Routing automatique par version
+✅ Lisible et maintenable
+
+---
+
+<span class="chapter">Versioning d'API</span>
+
+## Configuration
+
+```yml
+spring:
+  mvc:
+    apiversion:
+      default: 1.0
+      use:
+        header: API-Version
+        # query-parameter / path-segment / media-type-parameter
+```
+
+
+On passe la démo, on parle de l'exact match et du base match, on montre le problème avec la 1.3
+
+
+---
+
+layout: cover
+transition: slide-up
+
+---
+
+<QuiVeutDesCadeaux title="4ème Cadeau !"/>
+
+---
+
+## layout: center
+
+# RestTestClient
+
+## Le client HTTP de test moderne
+
+
+RestTestClient remplace progressivement MockMvc/WebTestClient
+pour tester les APIs HTTP dans Spring MVC.
+Il apporte une API fluide, expressive et puissante.
+
+
+---
+
+<span class="chapter">RestTestClient</span>
+
+## Avant RestTestClient
+
+🍂 MockMvc
+
+- API verbeuse
+- Spécifique MVC
+- Assertions complexes
+
+🍂 WebTestClient
+
+- Orienté WebFlux
+- Pas naturel dans MVC
+
+❌ Pas d’unification
+❌ Pas de client HTTP unique
+
+
+Si vous avez plusieurs clients différents dans votre app,
+vous finissez avec plusieurs confs de test, ça devient vite le bordel
+
+
+---
+
+<span class="chapter">RestTestClient</span>
+
+## Avec RestTestClient
+
+🎯 Un **client HTTP de test unique**
+🎯 API fluide inspirée de WebTestClient
+🎯 Fonctionne avec :
+
+- MockMvc
+- RouterFunctions
+- Serveur réel (HTTP)
+
+🎯 Assertions intégrées faciles
+
+---
+
+<span class="chapter">RestTestClient</span>
+
+## Comment l’utiliser ?
+
+### 1. contre MockMvc
+
+```java
+RestTestClient client = RestTestClient
+    .bindToController(myController)
+    .build();
+```
+
+👉 Teste le contrôleur sans serveur HTTP réel
+
+### 2. contre un serveur réel
+
+```java
+RestTestClient client = RestTestClient
+        .bindToServer()
+        .baseUrl("http://localhost:8080")
+        .build();
+```
+
+👉 Appelle réellement l’API via HTTP
+
+---
+
+<span class="chapter">RestTestClient</span>
+
+## Des assertions puissantes
+
+```java
+client.get()
+  .uri("/api/foo")
+  .exchange()
+  .expectStatus().is4xxClientError()
+  .expectHeader().contentType(MediaType.APPLICATION_JSON)
+  .expectBody()
+  .jsonPath("$.error").isEqualTo("NotFound");
+```
+
+✅ Status
+✅ Headers
+✅ JSON body
+✅ JsonPath
+
+
+puis pitite démo
+
+
+---
+
+layout: cover
+transition: slide-up
+
+---
+
+<QuiVeutDesCadeaux title="5ème Cadeau !"/>
+
+---
+
+## layout: center
+
+# La null safety
+
+---
+
+<span class="chapter">Null Safety</span>
+
+## L'erreur à un milliard de dollars
+
+<div class="pane-red glass-panel mt-36 mb-12">
+Exception in thread "main" java.lang.NullPointerException
+</div>
+
+<div v-click class="flex justify-end">
+    <div class="text-xl opacity-70 italic max-w-2xl">
+        "I call it my billion-dollar mistake..."
+        <div class="mt-2">— Tony Hoare, 1965</div>
+    </div>
+</div>
+
+---
+
+<span class="chapter">Null Safety</span>
+
+<img style="height: 60px" src="/images/jspecify-banner.svg" class="invert" />
+
+<p v-click>Annotations :</p>
+
+<div class="grid grid-cols-2 grid-rows-2 gap-3 pt-2">
+    <span v-after class="glass-panel pane py-2 px-4">@NonNull</span>
+    <span v-click class="glass-panel pane py-2 px-4">@Nullable</span>
+    <span v-click class="glass-panel pane py-2 px-4">@NullMarked</span>
+    <span v-click class="glass-panel pane py-2 px-4">@NullUnmarked</span>
+</div>
+
+---
+
+<span class="chapter">Null Safety</span>
+
+## Projets déjà annotés
+
+<div class="grid grid-cols-4 grid-rows-6 gap-2 pt-12">
+    <span class="glass-panel pane py-2 text-xs px-4">Spring Boot 4.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring Framework 7.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring Data 4.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring Security 7.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring Batch 6.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring Kafka 4.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring Integration 7.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring GraphQL 2.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring Web Services 5.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring AMQP 4.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring Shell 4.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring Kafka 4.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring Plugin 4.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring HATEOAS 3.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring Modulith 2.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring Vault 4.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring Cloud Commons 5.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Spring Cloud Gateway 5.0</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Micrometer 1.16</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Micrometer Tracing 1.6</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Context Propagation 1.2</span>
+    <span class="glass-panel pane py-2 text-xs px-4">Reactor 2025.0</span>
+</div>
+
+
+
+Support Intellij Incroyable
+
+
+
+---
+
+<span class="chapter">Null Safety</span>
+
+## JSpecify en action
+
+Au niveau du package [`package-info.java`] :
+
+```java
+@NullMarked
+package fr.jetdev;
+
+import org.jspecify.annotations.NullMarked;
+```
+
+---
+
+<span class="chapter">Null Safety</span>
+
+## JSpecify en action
+
+En action :
+
+````md magic-move
+```java
+public class UserService {
+
+    public User findById(Long id) {
+        return repository.findById(id);
+    }
+
+    public void process(User user) {
+        String name = user.getName();
+        System.out.println(name.toUpperCase());
+    }
+}
+```
+
+```java {all|3|8|all}
+import org.jspecify.annotations.Nullable;
+
+public class UserService {
+
+    public @Nullable User findById(Long id) {
+        return repository.findById(id);
+    }
+
+    public void process(User user) {
+        String name = user.getName();
+        System.out.println(name.toUpperCase());
+    }
+}
+```
+
+```java {all|9-10|all}
+import org.jspecify.annotations.Nullable;
+
+public class UserService {
+
+    public @Nullable User findById(Long id) {
+        return repository.findById(id);
+    }
+
+    public void process(User user) {
+        String name = user.getName();
+        System.out.println(name.toUpperCase()); // ⚠️ Warning IDE !
+        // Possible NullPointerException
+    }
+}
+```
+
+```java {all|9-13|all}
+import org.jspecify.annotations.Nullable;
+
+public class UserService {
+
+    public @Nullable User findById(Long id) {
+        return repository.findById(id);
+    }
+
+    public void process(@Nullable User user) {
+        if (user != null) {
+            String name = user.getName();
+            System.out.println(name.toUpperCase()); // ✅ Safe !
+        }
+    }
+}
+```
+````
+
+<div v-click="4" class="pane glass-panel pane-green mt-6 p-4">
+  ✨ L'IDE vous prévient <strong>avant</strong> l'exécution !
+</div>
+
+
+Voyons comment JSpecify fonctionne en pratique.
+
+D'abord on annote notre méthode avec @Nullable pour indiquer qu'elle peut retourner null.
+
+Ensuite, l'IDE détecte automatiquement qu'on utilise potentiellement une valeur null sans vérification.
+
+Enfin, on ajoute la vérification nécessaire et l'IDE est content.
+
+C'est du shift-left : on détecte les bugs pendant le développement, pas en production !
+
+
+---
+
+<span class="chapter">Null Safety</span>
+
+## NullAway
+
+Verification de la nullabilité au build-time.
+
+<span class="glass-panel pane">JDK 21.0.8+</span>
+
+ou
+
+<span class="glass-panel pane">Java 25 Toolchain</span> + <span class="glass-panel pane">build avec --release 17.</span>
+
+---
+
+layout: cover
+transition: slide-up
+
+---
+
+<QuiVeutDesCadeaux title="6ème Cadeau !"/>
+
+
+Sixième gros cadeau de Spring Boot 4 :
+l’observabilité devient enfin simple, standard et unifiée.
+
+Avant, entre Micrometer, Sleuth, Zipkin, Prometheus, Grafana, OTEL…
+c’était souvent un patchwork.
+
+
+---
+
+## layout: center
+
+# L’observabilité
+
+## Enfin un standard par défaut
+
+
+Spring Boot 4 adopte OpenTelemetry comme standard unique.
+Plus besoin d’empiler plusieurs stacks.
+
+
+---
+
+<span class="chapter">Observabilité</span>
+
+## Avant Spring Boot 4
+
+### Le mille-feuille de l’observabilité
+
+- Micrometer pour les métriques
+- Sleuth pour le tracing
+- Zipkin / Jaeger pour la collecte
+- Prometheus pour le scraping
+- Grafana pour la visualisation
+
+❌ Beaucoup de briques
+❌ Beaucoup de configs
+❌ Beaucoup d’incohérences
+
+
+Chaque projet avait son propre mix.
+Et au final, les équipes perdaient beaucoup de temps
+juste pour "avoir des métriques".
+
+
+---
+
+<span class="chapter">Observabilité</span>
+
+## Avec Spring Boot 4
+
+✅ OpenTelemetry devient le **socle unique**
+✅ Traces + métriques + logs corrélés
+✅ Export standard OTLP
+✅ Compatible avec **Tous les backends**
+
+- Grafana Tempo
+- Prometheus
+- Jaeger
+- Datadog
+- Dynatrace
+- New Relic
+
+
+OpenTelemetry n’est plus une option :
+c’est la base officielle de Spring Boot 4.
+
+
+---
+
+<span class="chapter">Observabilité</span>
+
+## Le nouveau starter
+
+```xml
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-opentelemetry</artifactId>
+</dependency>
+```
+
+✅ Une seule dépendance
+✅ Auto-configuration complète
+✅ Plus besoin de Sleuth
+✅ Plus besoin de config Micrometer manuelle
+
+
+On ajoute un seul starter,
+et tout est branché automatiquement.
+
+
+---
+
+<span class="chapter">Observabilité</span>
+
+## Configuration minimale
+
+```yml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  tracing:
+    sampling:
+      probability: 1.0
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces
+  otlp:
+    metrics:
+      export:
+        url: http://localhost:4318/v1/metrics
+```
+
+✅ Traces activées
+✅ Métriques activées
+✅ Export OTLP standard
+✅ Aucun code à écrire
+
+---
+
+<span class="chapter">Observabilité</span>
+
+## Ce qui est instrumenté automatiquement
+
+✅ Requêtes HTTP serveur
+✅ Appels HTTP clients
+✅ Threading
+✅ Pools de connexions
+✅ JVM (CPU, mémoire, GC)
+✅ Exceptions
+
+
+Sans aucune annotation dans le code.
+L’instrumentation est entièrement automatique.
+
+
+---
+
+<span class="chapter">Observabilité</span>
+
+## Tracing distribué
+
+Chaque appel HTTP génère :
+
+✅ Un trace-id
+✅ Des spans serveurs
+✅ Des spans clients
+✅ Une corrélation automatique
+
+👉 Visible dans :
+
+- Grafana Tempo
+- Jaeger
+- Dynatrace
+
+
+On peut suivre un appel :
+du contrôleur
+jusqu’au client externe
+sans écrire une seule ligne de code.
+
+
+---
+
+layout: cover
+transition: slide-up
+
+---
+
+<QuiVeutDesCadeaux title="7ème Cadeau !"/>
+
+---
+
+## layout: center
+
+# La résilience
+
+---
+
+## layout: center
+
+# Jackson 3.0
+
+---
+
+# Jackson 3.0 - Nouveautés majeures
+
+- **Java 17 minimum** requis (comme Spring Boot 4)
+- **Nouveau package** : `tools.jackson` remplace `com.fasterxml.jackson`
+- **Annotations unifiées** : plus besoin de `jackson-annotations` séparé
+- **Meilleure null-safety** et intégration avec JSpecify
+
+---
+
+# Jackson 3.0 - Performance & API
+
+- **Streaming API améliorée** : parsing JSON encore plus rapide
+- **Records Java** : support natif sans configuration
+- **Immutables** : meilleur support des objets immuables
+- **Builder pattern** : détection automatique des builders
+
+---
+
+# Jackson 3.0 - Breaking Changes
+
+Avant
+
+```java
+import com.fasterxml.jackson.databind.ObjectMapper;
+```
+
+Après
+
+```java
+import tools.jackson.databind.ObjectMapper
+```
+
+⚠️ Migration nécessaire des imports dans tout le code
+
+---
+
+# Jackson 3.0 - Nouvelles annotations
+
+```java
+// Support natif des records
+public record Person(String name, int age) {}
+
+// Constructeur avec @JsonCreator implicite
+// Plus besoin d'annoter explicitement !
+
+ObjectMapper mapper = new ObjectMapper();
+Person p = mapper.readValue(json, Person.class);
+```
+
+---
+
+# Jackson 3.0 - Configuration Spring Boot 4
+
+```yaml
+# application.yml - Auto-configuré par Spring Boot 4
+spring:
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      indent_output: true
+    deserialization:
+      fail_on_unknown_properties: false
+```
+
+---
+
+## layout: center
+
+# Comment migrer ?
+
+https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide
+
+---
+
+# Les liens cools :
+
+- [Null Safety en Java avec JSpecify et NullAway - Sébastien Deleuze](https://www.youtube.com/watch?v=F_Qyo1cCpvY)
+
+---
+
+## layout: center
+
+# Fin -->

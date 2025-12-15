@@ -1,0 +1,124 @@
+:root {
+    --slidev-theme-primary: #FF772C;
+    --slidev-theme-secondary: #35495e;
+    --slidev-theme-accents: #6282a5;
+    --slidev-code-background: #1e1e1e80;
+}
+
+@font-face {
+    font-family: "Jetfont";
+    font-display: swap;
+    font-weight: 300;
+    src: url("../fonts/jet-font.otf") format("opentype");
+}
+
+@font-face {
+    font-family: "Input Mono";
+    font-display: swap;
+    font-weight: 300;
+    src: url("../fonts/inputSans-Light.ttf") format("truetype");
+}
+
+.slidev-layout {
+    font-family: "Input Mono", sans-serif;
+    color: #e0e0e0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: Jetfont, sans-serif;
+    color: var(--slidev-theme-primary);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+a {
+    color: var(--slidev-theme-primary);
+}
+
+ul, ol {
+    line-height: 1.6;
+}
+
+.slidev-layout p,
+.slidev-layout li {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+
+.text-primary {
+    color: var(--slidev-theme-primary);
+}
+
+.letter-background {
+    background-image: url("../public/images/bg.png");
+    background-size: cover;
+}
+
+.slidev-layout.cover,
+.slidev-layout.center,
+.slidev-layout.intro {
+    @apply h-full grid;
+
+    background-image: url("../public/images/bg.png");
+    background-size: cover;
+
+    h1 {
+        @apply text-6xl leading-20;
+    }
+
+    h1 + p {
+        @apply -mt-2 opacity-50 mb-4;
+    }
+
+    p + h2,
+    ul + h2,
+    table + h2 {
+        @apply mt-10;
+    }
+}
+
+.glass-panel {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-panel-opaque {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.pane {
+    @apply rounded-xl border border-orange p-4;
+}
+
+
+.pane-red {
+    @apply rounded-xl border border-red bg-red-500/10 p-4;
+}
+
+.pane-green {
+    @apply rounded-xl border border-green bg-green-500/10 p-4;
+}
+
+.chapter {
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    @apply absolute p-2 top-0 right-0 rounded-bl-lg;
+    color: rgba(255, 119, 44, 0.9);
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+    }
+}
+
+.animate-pulse {
+    animation: pulse-glow 2s ease-in-out infinite;
+}

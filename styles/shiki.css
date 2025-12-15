@@ -1,0 +1,12 @@
+.slidev-code {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(4px);
+    border: 1px solid #FF772C;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.slidev-code-highlighted .slidev-code-dishonored {
+    font-family: 'Input Mono', monospace;
+}
+
+
